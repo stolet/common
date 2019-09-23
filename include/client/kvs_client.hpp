@@ -55,16 +55,16 @@ class KvsClient : public KvsClientInterface {
       socket_cache_(SocketCache(&context_, ZMQ_PUSH)),
       key_address_puller_(zmq::socket_t(context_, ZMQ_PULL)),
       response_puller_(zmq::socket_t(context_, ZMQ_PULL)),
-      log_(spdlog::basic_logger_mt("client_log", "client_log.txt", true)),
+      // log_(spdlog::basic_logger_mt("client_log", "client_log.txt", true)),
       timeout_(timeout) {
     // initialize logger
-    log_->flush_on(spdlog::level::info);
+    //log_->flush_on(spdlog::level::info);
 
     std::hash<string> hasher;
     seed_ = time(NULL);
     seed_ += hasher(ip);
     seed_ += tid;
-    log_->info("Random seed is {}.", seed_);
+    //log_->info("Random seed is {}.", seed_);
 
     // bind the two sockets we listen on
     key_address_puller_.bind(ut_.key_address_bind_address());
@@ -124,8 +124,8 @@ class KvsClient : public KvsClientInterface {
 
       if (pending_request_map_.find(key) != pending_request_map_.end()) {
         if (response.error() == AnnaError::NO_SERVERS) {
-          log_->error(
-              "No servers have joined the cluster yet. Retrying request.");
+          //log_->error(
+          //    "No servers have joined the cluster yet. Retrying request.");
           pending_request_map_[key].first = std::chrono::system_clock::now();
 
           query_routing_async(key);
@@ -257,7 +257,7 @@ class KvsClient : public KvsClientInterface {
   /**
    * Set the logger used by the client.
    */
-  void set_logger(logger log) { log_ = log; }
+  //void set_logger(logger log) { log_ = log; }
 
   /**
    * Clears the key address cache held by this client.
@@ -332,10 +332,10 @@ class KvsClient : public KvsClientInterface {
   bool check_tuple(const KeyTuple& tuple) {
     Key key = tuple.key();
     if (tuple.error() == 2) {
-      log_->info(
-          "Server ordered invalidation of key address cache for key {}. "
-          "Retrying request.",
-          key);
+      //log_->info(
+      //    "Server ordered invalidation of key address cache for key {}. "
+      //    "Retrying request.",
+      //    key);
 
       invalidate_cache_for_key(key, tuple);
       return true;
@@ -344,8 +344,8 @@ class KvsClient : public KvsClientInterface {
     if (tuple.invalidate()) {
       invalidate_cache_for_key(key, tuple);
 
-      log_->info("Server ordered invalidation of key address cache for key {}",
-                 key);
+      //log_->info("Server ordered invalidation of key address cache for key {}",
+      //           key);
     }
 
     return false;
